@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Employee\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use Illuminate\Support\Facades\Password;
 
 class ForgotPasswordController extends Controller
 {
@@ -16,9 +17,14 @@ class ForgotPasswordController extends Controller
     | includes a trait which assists in sending these notifications from
     | your application to your users. Feel free to explore this trait.
     |
-    */
+     */
 
     use SendsPasswordResetEmails;
+
+    protected function broker()
+    {
+        return Password::broker('employees');
+    }
 
     /**
      * Create a new controller instance.
@@ -27,6 +33,12 @@ class ForgotPasswordController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
+        $this->middleware('guest.employee:employee');
     }
+
+    public function showLinkRequestForm()
+    {
+        return view('employees.auth.passwords.email');
+    }
+
 }

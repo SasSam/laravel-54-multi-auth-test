@@ -1,9 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Employee\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
 
 class ResetPasswordController extends Controller
 {
@@ -16,16 +19,11 @@ class ResetPasswordController extends Controller
     | and uses a simple trait to include this behavior. You're free to
     | explore this trait and override any methods you wish to tweak.
     |
-    */
+     */
 
     use ResetsPasswords;
 
-    /**
-     * Where to redirect users after resetting their password.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
+    protected $redirectTo = null;
 
     /**
      * Create a new controller instance.
@@ -34,6 +32,25 @@ class ResetPasswordController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
+        $this->redirectTo = route('employee.dashboard');
+        $this->middleware('guest.employee:employee');
     }
+
+    protected function guard()
+    {
+        return Auth::guard('employee');
+    }
+
+    protected function broker()
+    {
+        return Password::broker('employees');
+    }
+
+    public function showResetForm(Request $request, $token = null)
+    {
+        return view('employees.auth.passwords.reset')->with(
+            ['token' => $token, 'email' => $request->email]
+        );
+    }
+
 }

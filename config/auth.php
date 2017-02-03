@@ -11,11 +11,11 @@ return [
     | reset options for your application. You may change these defaults
     | as required, but they're a perfect start for most applications.
     |
-    */
+     */
 
     'defaults' => [
-        'guard' => 'web',
-        'passwords' => 'users',
+        'guard' => 'customer',
+        'passwords' => 'customers',
     ],
 
     /*
@@ -33,18 +33,39 @@ return [
     |
     | Supported: "session", "token"
     |
-    */
+     */
 
     'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
+        // 'web' => [
+        //     'driver' => 'session',
+        //     'provider' => 'users',
+        // ],
 
         'api' => [
             'driver' => 'token',
             'provider' => 'users',
         ],
+
+        'employee' => [
+            'driver' => 'session',
+            'provider' => 'employees',
+        ],
+
+        'customer' => [
+            'driver' => 'session',
+            'provider' => 'customers',
+        ],
+
+        'employeeApi' => [
+            'driver' => 'token',
+            'provider' => 'employees',
+        ],
+
+        'customerApi' => [
+            'driver' => 'token',
+            'provider' => 'customers',
+        ],
+
     ],
 
     /*
@@ -62,14 +83,23 @@ return [
     |
     | Supported: "database", "eloquent"
     |
-    */
+     */
 
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\User::class,
+            'model' => App\Models\User::class,
         ],
 
+        'employees' => [
+            'driver' => 'eloquent.employee',
+            'model' => App\Models\UserEmployee::class,
+        ],
+
+        'customers' => [
+            'driver' => 'eloquent.customer',
+            'model' => App\Models\Customer::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
@@ -89,11 +119,21 @@ return [
     | considered valid. This security feature keeps tokens short-lived so
     | they have less time to be guessed. You may change this as needed.
     |
-    */
+     */
 
     'passwords' => [
         'users' => [
             'provider' => 'users',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+        'employees' => [
+            'provider' => 'employees',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+        'customers' => [
+            'provider' => 'customers',
             'table' => 'password_resets',
             'expire' => 60,
         ],

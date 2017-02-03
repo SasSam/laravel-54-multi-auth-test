@@ -56,10 +56,42 @@ class Handler extends ExceptionHandler
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
+        // if ($request->expectsJson()) {
+        //     return response()->json(['error' => 'Unauthenticated.'], 401);
+        // }
+
+        // return redirect()->guest('login');
+
+        // https://laravel.io/forum/09-01-2016-laravel-53-auth-redirect-guests-based-on-guard
         if ($request->expectsJson()) {
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
 
-        return redirect()->guest('login');
+        // Customize the redirect based on the guard
+        // Note that we don't know which guard failed here, but I can't find an elegant way
+        // to handle this and I know in this project I am only using one guard at a time anyway.
+        // $middleware = request()->route()->gatherMiddleware();
+        // $guard = config('auth.defaults.guard');
+        // foreach ($middleware as $m) {
+        //     if (preg_match("/auth:/", $m)) {
+        //         list($mid, $guard) = explode(":", $m);
+        //     }
+        // }
+
+        $guard = array_get($exception->guards(), 0);
+
+        switch ($guard) {
+            case 'customer':
+                $login = route('customer.login');
+                break;
+            case 'employee':
+                $login = route('employee.login');
+                break;
+            default:
+                $login = '/';
+                break;
+        }
+
+        return redirect()->guest($login);
     }
 }
